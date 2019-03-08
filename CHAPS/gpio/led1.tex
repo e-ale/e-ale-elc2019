@@ -1,0 +1,24 @@
+\begin{frame}
+   {sysfs led interface}
+   \begin{itemize}
+      \item The sysfs mechanism also provides a generic led interface
+   \end{itemize}
+   \begin{raw}
+root@beaglebone:~# ls /sys/class/leds/
+beaglebone:green:usr0  beaglebone:green:usr2
+beaglebone:green:usr1  beaglebone:green:usr3
+root@beaglebone:~# ls /sys/class/leds/beaglebone\:green\:usr3
+brightness  device  max_brightness  power  subsystem  trigger  uevent
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/trigger 
+[none] rc-feedback rfkill-any kbd-scrolllock kbd-numlock kbd-capslock
+kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock
+kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock usb-gadget
+usb-host mmc0 timer oneshot disk-activity ide-disk mtd nand-disk
+heartbeat backlight gpio cpu cpu0 default-on panic 
+   \end{raw}
+\end{frame}
+
+\cprotect\note{
+
+}
+

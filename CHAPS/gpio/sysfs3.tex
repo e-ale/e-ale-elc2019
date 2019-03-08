@@ -1,0 +1,17 @@
+\begin{frame}
+   {sysfs gpio interface is deprecated}
+   \begin{itemize}
+      \item The sysfs gpio mechanism is actually deprecated in favour of libgpiod
+      \item Although the libgpiod set of tools are now the preferred way of handling
+	      gpios, platforms like the PocketBeagle have their own utilities
+	      like \verb?show-pins.pl?
+   \end{itemize}
+   \begin{raw}
+perl /opt/scripts/device/bone/show-pins.pl -v
+   \end{raw}
+\end{frame}
+
+\cprotect\note{
+
+}
+

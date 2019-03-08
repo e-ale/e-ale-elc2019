@@ -1,0 +1,32 @@
+\begin{frame}
+   {libgpiod - gpioinfo}
+   \begin{itemize}
+      \item The libgpiod library and set of tools is now the official way
+	      of dealing with gpios.
+      \begin{raw}
+debian@beaglebone:~$ gpioinfo
+gpiochip0 - 32 lines:
+        line   0:  "MDIO_DATA"       unused   input  active-high
+        line   1:   "MDIO_CLK"       unused   input  active-high
+...
+gpiochip1 - 32 lines:
+        line   0:   "GPMC_AD0"       unused   input  active-high
+        line   1:   "GPMC_AD1"       unused   input  active-high
+...
+gpiochip2 - 32 lines:
+        line   0:  "GPMC_CSN3"      "P2_20"   input  active-high [used]
+        line   1:   "GPMC_CLK"      "P2_17"   input  active-high [used]
+...
+gpiochip3 - 32 lines:
+        line   0:  "GMII1_COL"       unused   input  active-high
+        line   1:  "GMII1_CRS"       unused   input  active-high
+...
+      \end{raw}
+   \end{itemize}
+\end{frame}
+
+\cprotect\note{
+
+
+}
+

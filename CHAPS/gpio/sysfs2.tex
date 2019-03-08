@@ -1,0 +1,19 @@
+\begin{frame}
+   {Using the sysfs gpio interface for output}
+   \begin{raw}
+# Set up GPIO 56 for USR3 and set to output
+echo "56" > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio56/direction
+# Write output
+echo "1" > /sys/class/gpio/gpio56/value
+echo "0" > /sys/class/gpio/gpio56/value
+# Clean up
+echo "56" > /sys/class/gpio/unexport
+   \end{raw}
+\end{frame}
+
+\cprotect\note{
+
+
+}
+

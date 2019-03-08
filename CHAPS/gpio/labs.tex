@@ -1,0 +1,167 @@
+\clearpage\section{Labs}\begin{Lab}
+
+
+\begin{exe} {List all the PocketBeagle pins and their configuration}
+   We'll use \verb?show-pins.pl? to do so.
+
+   \begin{sol}
+      \begin{raw}
+perl /opt/scripts/device/bone/show-pins.pl -v
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Playing with the button}
+   First we'll use the button to read the value of a GPIO input.
+
+   The button on the Bacon Bits is on the 13th gpio of the second gpio chip
+   (gpiochip1), although sysfs lists this as gpiochip32, since there are
+   32 gpios per chip.
+
+   So the gpio number is 32 + 13, or 45. gpio45 is on by default, but
+   otherwise we'd have to first export it to make it available in syfs.
+
+   Read both the settings and the value of gpio45 with the USR button both
+   pressed and not pressed.
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# ls /sys/class/gpio/gpio45
+active_low  device  direction  edge  label  power  subsystem  uevent  value
+root@beaglebone:~# cat /sys/class/gpio/gpio45/active_low 
+0
+root@beaglebone:~# cat /sys/class/gpio/gpio45/direction 
+in
+root@beaglebone:~# cat /sys/class/gpio/gpio45/label 
+P2_33
+root@beaglebone:~# cat /sys/class/gpio/gpio45/value 
+1
+watch -n0 cat /sys/class/gpio/gpio45/value
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Read the button with libgpiod}
+   Now use gpioget from libgpiod to read the button.
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# gpioget gpiochip1 13
+1
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Light up the USR3 LED with the LED class}
+   Now use /sys/class/led/* to light up the LED.
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# ls /sys/class/leds/beaglebone\:green\:usr3
+brightness  device  max_brightness  power  subsystem  trigger  uevent
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/brightness 
+0
+root@beaglebone:~# echo 255 > /sys/class/leds/beaglebone\:green\:usr3/brightness  
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/brightness 
+255
+root@beaglebone:~# echo 0 > /sys/class/leds/beaglebone\:green\:usr3/brightness  
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Light up the USR3 LED with a LED trigger}
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/trigger 
+[none] rc-feedback rfkill-any kbd-scrolllock kbd-numlock kbd-capslock
+kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock
+kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock usb-gadget
+usb-host mmc0 timer oneshot disk-activity ide-disk mtd nand-disk
+heartbeat backlight gpio cpu cpu0 default-on panic 
+root@beaglebone:~# echo heartbeat > /sys/class/leds/beaglebone\:green\:usr3/trigger
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/trigger 
+none rc-feedback rfkill-any kbd-scrolllock kbd-numlock kbd-capslock
+kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock
+kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock usb-gadget
+usb-host mmc0 timer oneshot disk-activity ide-disk mtd nand-disk
+[heartbeat] backlight gpio cpu cpu0 default-on panic 
+root@beaglebone:~# echo none > /sys/class/leds/beaglebone\:green\:usr3/trigger
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Light up the USR3 LED with the button as a LED trigger}
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/trigger 
+[none] rc-feedback rfkill-any kbd-scrolllock kbd-numlock kbd-capslock
+kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock
+kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock usb-gadget
+usb-host mmc0 timer oneshot disk-activity ide-disk mtd nand-disk
+heartbeat backlight gpio cpu cpu0 default-on panic 
+root@beaglebone:~# echo gpio > /sys/class/leds/beaglebone\:green\:usr3/trigger
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/trigger 
+none rc-feedback rfkill-any kbd-scrolllock kbd-numlock kbd-capslock
+kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock
+kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock usb-gadget
+usb-host mmc0 timer oneshot disk-activity ide-disk mtd nand-disk
+heartbeat backlight [gpio] cpu cpu0 default-on panic 
+root@beaglebone:~# echo 45 > /sys/class/leds/beaglebone\:green\:usr3/gpio
+      \end{raw}
+
+   Now press the button a few times. The LED should be on when the button
+isn't pressed and off when the buutton i pressed.
+
+   How do we reverse this configuration and have it come on when the burron
+is pressed.
+      \begin{raw}
+root@beaglebone:~# cat /sys/class/leds/beaglebone\:green\:usr3/inverted 
+0
+root@beaglebone:~# echo 1 > /sys/class/leds/beaglebone\:green\:usr3/inverted 
+      \end{raw}
+
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Turn on USR3 LED with gpio sysfs interface}
+
+   Now we'll turn on USR3 which is connected to the 24th gpio gpiochip1.
+
+   So the gpio number is 32 + 24 or gpio56.
+
+   This gpio isn't yet setup so we have a little more work to do.
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# echo 56 > /sys/class/gpio/export 
+root@beaglebone:~# ls /sys/class/gpio/gpio56
+active_low  device  direction  edge  label  power  subsystem  uevent  value
+root@beaglebone:~# cat /sys/class/gpio/gpio56/active_low 
+0
+root@beaglebone:~# cat /sys/class/gpio/gpio56/direction 
+out
+root@beaglebone:~# cat /sys/class/gpio/gpio56/value 
+0
+root@beaglebone:~# echo 1 > /sys/class/gpio/gpio56/value 
+root@beaglebone:~# cat /sys/class/gpio/gpio56/value 
+1
+root@beaglebone:~# echo 0 > /sys/class/gpio/gpio56/value 
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\begin{exe} {Light up the USR3 LED with libgpiod}
+   Now use gpioset from libgpiod to light up the LED.
+
+   \begin{sol}
+      \begin{raw}
+root@beaglebone:~# gpioset -m wait gpiochip1 24=1
+# Press enter to terminate
+      \end{raw}
+   \end{sol}
+\end{exe}
+
+\end{Lab}
+

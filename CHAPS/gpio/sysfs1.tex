@@ -1,0 +1,21 @@
+\begin{frame}
+   {Using the sysfs gpio interface for input}
+Our button is tied to the 13th pin on the second out of 4 gpio banks or gpio 45.
+
+1 x 32 + 13 = 45
+   \begin{raw}
+# Since gpio 45 is already exported we don't need to do it
+# echo "45" > /sys/class/gpio/export
+cat /sys/class/gpio/gpio45/direction
+in
+# Read from button input
+cat /sys/class/gpio/gpio45/value
+1
+   \end{raw}
+\end{frame}
+
+\cprotect\note{
+
+
+}
+
