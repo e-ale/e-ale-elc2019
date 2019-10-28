@@ -1,0 +1,67 @@
+
+\begin{frame}
+   {Device Tree}
+
+	\begin{itemize}
+		\item
+			The Right button is connected to P1.29
+		\item
+			One of the pinmux settings connects P1.29 to PRU0.7, however this is not the default pinmux configuration
+		\item
+			There are several ways to update the pinumx
+		\item
+			The cross platform way to do this properly is by updating the DeviceTree
+		\item
+ 			However, for expediency we're going to use the beaglebone \textbf{config-pin} to setup the pin properly.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	{pocketbeagle.dts P1.29 pinctrl node}
+
+	\begin{raw}
+	/* P1_29 (ZCZ ball A14) pruin */
+	P1_29_pinmux {
+		compatible = "bone-pinmux-helper";
+		status = "okay";
+		pinctrl-names = "default", "gpio", "gpio_pu", "gpio_pd",
+				"gpio_input", "qep", "pruout", "pruin";
+		pinctrl-0 = <&P1_29_default_pin>;
+		pinctrl-1 = <&P1_29_gpio_pin>;
+		pinctrl-2 = <&P1_29_gpio_pu_pin>;
+		pinctrl-3 = <&P1_29_gpio_pd_pin>;
+		pinctrl-4 = <&P1_29_gpio_input_pin>;
+		pinctrl-5 = <&P1_29_qep_pin>;
+		pinctrl-6 = <&P1_29_pruout_pin>;
+		pinctrl-7 = <&P1_29_pruin_pin>;
+	};
+	\end{raw}
+\end{frame}
+
+\cprotect\note{
+
+
+}
+
+\begin{frame}
+   {Using the sysfs gpio interface for Right button}
+Our button is tied to the 21st pin on the fourth out of 4 gpio banks or gpio 117.
+
+3 x 32 + 21 = 117 (banks 0-3)
+   \begin{raw}
+# First set up the pinmux appropriately
+config-pin p1.29 gpio
+echo "117" > /sys/class/gpio/export
+cat /sys/class/gpio/gpio117/direction
+in
+# Read from button input
+cat /sys/class/gpio/gpio117/value
+1
+   \end{raw}
+\end{frame}
+
+\cprotect\note{
+
+
+}
+
